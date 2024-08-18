@@ -1,0 +1,28 @@
+{
+  "name": "haxe-func",
+  "version": "0.0.1",
+  "description": "A custom Haxe target for Func",
+  "url": "http://haxe-func.metacraft.studio",
+  "license": "MIT",
+  "tags": [
+    "ton",
+    "func",
+    "reflaxe"
+  ],
+  "dependencies": {
+    "reflaxe": "git:https://github.com/SomeRanDev/reflaxe"
+  },
+  "contributors": [
+    "fluctlight-kayaba"
+  ],
+  "classPath": "src/",
+  "releasenote": "Initial release.",
+  "reflaxe": {
+    "name": "Func",
+    "abbv": "func",
+    "stdPaths": [
+      "std",
+      "std/func/_std"
+    ]
+  }
+}

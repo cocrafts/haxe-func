@@ -1,0 +1,4 @@
+-D func
+-D Func
+--macro nullSafety("funccompiler")
+--macro funccompiler.CompilerInit.Start()
