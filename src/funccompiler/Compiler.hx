@@ -37,7 +37,13 @@ class Compiler extends DirectToStringCompiler {
 	**/
 	public function compileEnumImpl(enumType:EnumType, constructs:Array<EnumOptionData>):Null<String> {
 		// TODO: implement
-		return null;
+		var result = 'enum ${enumType.name} {\n';
+		for (construct in enumType.constructs) {
+			result += '  ${construct.name},\n';
+		}
+
+		result += '}';
+		return result;
 	}
 
 	/**
@@ -51,6 +57,7 @@ class Compiler extends DirectToStringCompiler {
 		https://api.haxe.org/haxe/macro/TypedExpr.html
 	**/
 	public function compileExpressionImpl(expr:TypedExpr, topLevel:Bool):Null<String> {
+		trace(expr, topLevel, "<--");
 		// TODO: implement
 		return null;
 	}
