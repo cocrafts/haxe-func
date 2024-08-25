@@ -1,9 +1,20 @@
-# haxe-func
+# Haxe-Func
 
-Func (TON) target for Haxe that make developing Smart Contract on TON easier with the power of Haxe. Made with [Reflaxe](https://github.com/SomeRanDev/reflaxe) which is used to build [Reflaxe.CPP](https://github.com/SomeRanDev/reflaxe.CPP), GC-free `C++` target for Haxe.
+Haxe-Func is a toolset designed to simplify the development of smart contracts on the TON network by leveraging the power and flexibility of Haxe. Built using [Reflaxe](https://github.com/SomeRanDev/reflaxe), which is utilized to create [Reflaxe.CPP](https://github.com/SomeRanDev/reflaxe.CPP)—a GC-free C++ target for Haxe—Haxe-Func aims to provide a comprehensive and efficient development environment for TON smart contracts.
 
-Primary goal of this project: re-use static typing and powerful, yet friendly syntax Haxe offer for Smart Contract development in TON.
-This also cover Javascript/Typescript SDK generation, Unit Testing for the Smart Contract.
+## Key Features
+
+- **Haxe Integration:** Harnesses Haxe's static typing and intuitive syntax to produce clean, maintainable, and reliable smart contract code.
+- **Cross-Platform SDK Generation:** Generates SDKs for JavaScript and TypeScript to seamlessly integrate smart contracts with front-end applications.
+- **Unit Testing:** Provides robust unit testing support to ensure high code quality and early detection of issues.
+
+## Project Goals
+
+The primary goal of Haxe-Func is to enable developers to write smart contracts for the TON network using Haxe's powerful and user-friendly language features. This includes:
+
+- **Enhanced Development Experience:** Leverage Haxe’s static typing and advanced macro system to streamline the development of smart contracts.
+- **Comprehensive Tooling:** Offer full support for unit testing and SDK generation to integrate smart contracts into various applications.
+- **Documentation and Support:** Provide extensive documentation and tooling to facilitate a smooth development process.
 
 ## At a Glance (pesudo for now):
 ```haxe
@@ -52,3 +63,18 @@ Here's a simple `.hxml` template to get you started!
 -lib haxe-func
 -D func-output=out
 ```
+
+## Roadmap
+
+- **Initial Release:** Establish the basic functionality for generating smart contracts and integrating with the TON network.
+- **Future Enhancements:** Expand features, improve documentation, and enhance IDE support based on community feedback.
+
+## References
+
+- [Haxe-Func Repository](https://github.com/cocrafts/haxe-func)
+- [Reflaxe](https://github.com/SomeRanDev/reflaxe)
+- [Reflaxe.CPP](https://github.com/SomeRanDev/reflaxe.CPP)
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
