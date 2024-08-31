@@ -1,7 +1,3 @@
-// A bit of code to compile with your custom compiler.
-//
-// This code has no relevance beyond testing purposes.
-// Please modify and add your own test code!
 package;
 
 enum TestEnum {
@@ -14,29 +10,22 @@ typedef MyStruct = {
 	var name:String;
 }
 
-function main() {
-	// trace("Hello world!");
+@:customMeta
+class Main {
+	public static var name:String = "hello";
 
-	// final c = new TestClass();
-	// for (i in 0...3) {
-	// 	c.increment();
-	// }
+	public static function main() {
+		var counter = 0;
+		var isBoolSupported = true;
+		var localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
+
+		greet(localAddr);
+		greet(name);
+	}
+
+	public static function greet(name:String) {
+		untyped __func__(";;this is raw func code");
+	}
 }
 
-// class TestClass {
-// 	var field:TestEnum;
-// 	public function new() {
-// 		trace("Create Code class!");
-// 		field = One;
-// 	}
-// 	public function increment() {
-// 		switch (field) {
-// 			case One:
-// 				field = Two;
-// 			case Two:
-// 				field = Three;
-// 			case _:
-// 		}
-// 		trace(field);
-// 	}
-// }
+function main() {}
