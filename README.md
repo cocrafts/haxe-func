@@ -43,7 +43,8 @@ class MyContract extends Contract {
 ### Current working state ([test/Code.hx](./test/Code.hx)):
 ```haxe
 class Main {
-    public static var name:String = "hello";
+    public static var globalCounter = 20;
+    public static var another = "string-based-value";
 
     public static function main() {
         var counter = 0;
@@ -51,30 +52,44 @@ class Main {
         var localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
 
         greet(localAddr);
-        greet(name);
+        greet("hello");
     }
 
     public static function greet(name:String) {
         untyped __func__(";;this is raw func code");
     }
+
+    public static function increase(a:Int, b:Int) {
+        return a + b;
+    }
 }
 ```
+
 Produce following FunC (clone this repo and run `haxelib run reflaxe test`):
 ```func
-global slice name = "hello";
+global int globalCounter;
+global slice another;
 
 () main() {
+    globalCounter = 20;
+    another = "string-based-value";
+
     int counter = 0;
     int isBoolSupported = -1;
     slice localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
 
     greet(localAddr);
-    greet(name);
+    greet("hello");
 }
 
 
 () greet(slice name) {
     ;;this is raw func code
+}
+
+
+int increase(int a, int b) {
+    return a + b;
 }
 ```
 
