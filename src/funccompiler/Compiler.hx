@@ -37,6 +37,7 @@ class Compiler extends DirectToStringCompiler {
 	public function compileClassImpl(classType:ClassType, varFields:Array<ClassVarData>, funcFields:Array<ClassFuncData>,):Null<String> {
 		final variables = [];
 		final globalVariables = [];
+		final globalVariableInits = [];
 		final functions = [];
 		final filePath = '${classType.name}.func';
 		final isTopLevel = StringTools.endsWith(classType.name, "_Fields_");
@@ -66,8 +67,12 @@ class Compiler extends DirectToStringCompiler {
 					varDeclaration.add('${compiledType.trustMe()}');
 				}
 
+				varDeclaration.add(' ${varName};');
 				if (fieldExpr != null) {
-					varDeclaration.add(' ${varName} = ${compileClassVarExpr(fieldExpr)};');
+					globalVariableInits.push({
+						name: varName,
+						value: compileClassVarExpr(fieldExpr),
+					});
 				}
 
 				(item.isStatic ? globalVariables : variables).push(varDeclaration.toString());
@@ -93,6 +98,16 @@ class Compiler extends DirectToStringCompiler {
 				funcDeclaration.add('${field.name}(');
 				funcDeclaration.add(args.map(a -> compileFunctionArgument(a, field.pos)).join(", "));
 				funcDeclaration.add(") {\n");
+
+				if (isMainFunc && globalVariableInits.length > 0) {
+					final initFragment = new StringBuf();
+					for (init in globalVariableInits) {
+						initFragment.add('${init.name} = ${init.value};\n');
+					}
+
+					funcDeclaration.add(initFragment.toString().tab());
+					funcDeclaration.add("\n");
+				}
 
 				if (item.expr != null) {
 					funcDeclaration.add(compileClassFuncExpr(item.expr).tab());
@@ -145,15 +160,15 @@ class Compiler extends DirectToStringCompiler {
 			case TLocal(v):
 				result.add(compileVarName(v.name, expr));
 			case TIdent(i):
-				trace('TIdent ${i}');
+				result.add(compileVarName(i, expr));
 			case TArray(e1, e2):
 				trace('TArray ${e1}, ${e2}');
 			case TBinop(op, e1, e2):
-				trace('TBinop ${op} ${e1}, ${e2}');
+				result.add(binopToFunC(op, e1, e2));
 			case TField(e, fa):
 				result.add(fieldAccessToFunC(e, fa));
 			case TTypeExpr(m):
-				trace('TTypeExpr ${m}');
+				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos) ?? "()");
 			case TParenthesis(e):
 				trace('TParenthesis ${e}');
 			case TObjectDecl(fields):
@@ -164,8 +179,8 @@ class Compiler extends DirectToStringCompiler {
 				result.add(callToFunC(e, el, expr));
 			case TNew(classTypeRef, _, el):
 				trace('TNew ${classTypeRef}, ${el}');
-			case TUnop(op, postFix, e):
-				trace('TUnop ${op}, ${postFix}, ${e}');
+			case TUnop(op, isPostFix, e):
+				result.add(unopToFunC(op, e, isPostFix));
 			case TFunction(tfunc):
 				trace('TFunction ${tfunc}');
 			case TVar(tvar, maybeExpr):
@@ -189,7 +204,12 @@ class Compiler extends DirectToStringCompiler {
 			case TTry(e, catches):
 				trace('TTry ${e}, ${catches}');
 			case TReturn(maybeExpr):
-				trace('TReturn ${maybeExpr}');
+				{
+					result.add("return");
+					if (maybeExpr != null) {
+						result.add(' ${compileExpression(maybeExpr)}');
+					}
+				}
 			case TBreak:
 				result.add("break");
 			case TContinue:
@@ -241,6 +261,29 @@ class Compiler extends DirectToStringCompiler {
 		return compileVarName(nameMeta.getNameOrNativeName());
 	}
 
+	function binopToFunC(op:Binop, e1:TypedExpr, e2:TypedExpr):String {
+		var leftExpr = compileExpression(e1);
+		var rightExpr = compileExpression(e2);
+		final operatorStr = OperatorHelper.binopToString(op);
+
+		return '${leftExpr} ${operatorStr} ${rightExpr};';
+	}
+
+	function unopToFunC(op:Unop, e:TypedExpr, isPostfix:Bool):String {
+		final compiledExpr = compileExpressionOrError(e);
+
+		switch (op) {
+			case OpIncrement:
+				return '${compiledExpr} += 1;';
+			case OpDecrement:
+				return '${compiledExpr} -= 1;';
+			case _:
+		}
+
+		final operatorStr = OperatorHelper.unopToString(op);
+		return isPostfix ? (compiledExpr + operatorStr) : (operatorStr + compiledExpr);
+	}
+
 	function constantToFunC(constant:TConstant):String {
 		switch (constant) {
 			case TInt(i):
@@ -250,7 +293,7 @@ class Compiler extends DirectToStringCompiler {
 			case TString(s):
 				return '"${s}"';
 			case TBool(b):
-				return b ? "-1" : "1";
+				return b ? "-1" : "0";
 			case _:
 				return "";
 		}
