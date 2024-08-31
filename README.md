@@ -16,7 +16,7 @@ The primary goal of Haxe-Func is to enable developers to write smart contracts f
 - **Comprehensive Tooling:** Offer full support for unit testing and SDK generation to integrate smart contracts into various applications.
 - **Documentation and Support:** Provide extensive documentation and tooling to facilitate a smooth development process.
 
-## At a Glance (pesudo for now):
+## At a Glance (WIP):
 ```haxe
 import std.lib.Func;
 
@@ -37,6 +37,44 @@ class MyContract extends Contract {
         };
         send(params);
     }
+}
+```
+
+### Current working state ([test/Code.hx](./test/Code.hx)):
+```haxe
+class Main {
+    public static var name:String = "hello";
+
+    public static function main() {
+        var counter = 0;
+        var isBoolSupported = true;
+        var localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
+
+        greet(localAddr);
+        greet(name);
+    }
+
+    public static function greet(name:String) {
+        untyped __func__(";;this is raw func code");
+    }
+}
+```
+Produce following FunC (clone this repo and run `haxelib run reflaxe test`):
+```func
+global slice name = "hello";
+
+() main() {
+    int counter = 0;
+    int isBoolSupported = -1;
+    slice localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
+
+    greet(localAddr);
+    greet(name);
+}
+
+
+() greet(slice name) {
+    ;;this is raw func code
 }
 ```
 
