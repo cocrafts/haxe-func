@@ -184,8 +184,9 @@ class Compiler extends DirectToStringCompiler {
 				trace('TObjectDecl not supported yet: ${fields}');
 			case TArrayDecl(el):
 				{
+					trace(el);
 					result.add("[");
-					result.add(el.map(e -> compileExpression(e).join(", ")));
+					result.add(el.map(e -> compileExpression(e)).join(", "));
 					result.add("]");
 				}
 			case TCall(e, el):
