@@ -1,5 +1,6 @@
 package funccompiler;
 
+import reflaxe.data.EnumOptionArg;
 import reflaxe.compiler.EverythingIsExprSanitizer;
 #if (macro || func_runtime)
 import StringTools;
@@ -252,13 +253,68 @@ class Compiler extends DirectToStringCompiler {
 		return result.toString();
 	}
 
+	function compileEnumFieldCall(e:TypedExpr, el:Array<TypedExpr>):Null<String> {
+		final ef = switch (e.expr) {
+			case TField(_, fa):
+				{
+					switch (fa) {
+						case FEnum(enumRef, ef):
+							if (enumRef.get().isReflaxeExtern()) {
+								return ef.name;
+							} else {
+								ef;
+							}
+						case _: null;
+					}
+				}
+			case _: null;
+		}
+
+		return if (ef != null) {
+			var result = new StringBuf();
+			switch (ef.type) {
+				case TFun(args, _):
+					{
+						result.add('{ "_index": ${Std.string(ef.index)}, }');
+						final fields = [];
+						for (i in 0...el.length) {
+							if (args[i] != null) {
+								result.add('"${args[i].name}": ${compileExpressionOrError(el[i])}');
+								if (i < el.length - 1) {
+									result.add(", ");
+								}
+							}
+						}
+						result.add(" }");
+					}
+				case _:
+			}
+
+			result.toString();
+		} else {
+			null;
+		}
+	}
+
 	function callToFunC(calledExpr:TypedExpr, args:Array<TypedExpr>, originalExpr:TypedExpr):StringBuf {
-		var result = new StringBuf();
+		final result = new StringBuf();
+
+		switch (calledExpr.expr) {
+			case TField(_, fa):
+				{
+					switch (fa) {
+						case FStatic(classRef, _):
+							trace('TODO: Called method from external module: inject #include ${classRef.get().getNameOrNativeName()}.func header');
+						case _:
+					}
+				}
+			case _:
+		}
+
 		result.add(compileExpression(calledExpr));
 		result.add("(");
 		result.add(args.map(e -> compileExpressionOrError(e)).join(", "));
-		result.add(")");
-
+		result.add(");");
 		return result;
 	}
 

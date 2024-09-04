@@ -1,34 +1,19 @@
 package;
 
-enum TestEnum {
-	One;
-	Two;
-	Three;
-}
-
-typedef MyStruct = {
-	var name:String;
-}
-
-@:customMeta
 class Main {
-	public static var globalCounter = 20;
-	public static var another = "string-based-value";
+	public static var globalCounter:Int = 0;
 
 	public static function main() {
 		var counter = 0;
-		var isBoolSupported = true;
+		var isBooleanSupported = true;
 		var localAddr = "EQArzP5prfRJtDM5WrMNWyr9yUTAi0c9o6PfR4hkWy9UQXHx";
+		var added = add(counter, globalCounter);
+		counter++;
 
-		greet(localAddr);
-		greet("hello");
+		Jetton.init();
 	}
 
-	public static function greet(name:String) {
-		untyped __func__(";;this is raw func code");
-	}
-
-	public static function increase(a:Int, b:Int) {
+	public static function add(a:Int, b:Int) {
 		return a + b;
 	}
 }
