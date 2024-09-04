@@ -1,5 +1,6 @@
 package funccompiler;
 
+import reflaxe.compiler.EverythingIsExprSanitizer;
 #if (macro || func_runtime)
 import StringTools;
 import haxe.macro.Expr;
@@ -162,7 +163,7 @@ class Compiler extends DirectToStringCompiler {
 			case TIdent(i):
 				result.add(compileVarName(i, expr));
 			case TArray(e1, e2):
-				trace('TArray ${e1}, ${e2}');
+				result.addMulti(compileExpressionOrError(e1), "[", compileExpressionOrError(e2), "]");
 			case TBinop(op, e1, e2):
 				result.add(binopToFunC(op, e1, e2));
 			case TField(e, fa):
@@ -170,19 +171,31 @@ class Compiler extends DirectToStringCompiler {
 			case TTypeExpr(m):
 				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos) ?? "()");
 			case TParenthesis(e):
-				trace('TParenthesis ${e}');
+				{
+					final compiledExpr = compileExpressionOrError(e);
+					final expr = if (!EverythingIsExprSanitizer.isBlocklikeExpr(e)) {
+						'(${compiledExpr})';
+					} else {
+						compiledExpr;
+					}
+					result.add(expr);
+				}
 			case TObjectDecl(fields):
-				trace('TObjDecl ${fields}');
+				trace('TObjectDecl not supported yet: ${fields}');
 			case TArrayDecl(el):
-				trace('TArrayDecl ${el}');
+				{
+					result.add("[");
+					result.add(el.map(e -> compileExpression(e).join(", ")));
+					result.add("]");
+				}
 			case TCall(e, el):
 				result.add(callToFunC(e, el, expr));
 			case TNew(classTypeRef, _, el):
-				trace('TNew ${classTypeRef}, ${el}');
+				trace('TNew not supported yet: ${classTypeRef}, ${el}');
 			case TUnop(op, isPostFix, e):
 				result.add(unopToFunC(op, e, isPostFix));
 			case TFunction(tfunc):
-				trace('TFunction ${tfunc}');
+				trace('TFunction not supported yet: ${tfunc}');
 			case TVar(tvar, maybeExpr):
 				{
 					final e = compileExpressionOrError(maybeExpr);
@@ -215,15 +228,15 @@ class Compiler extends DirectToStringCompiler {
 			case TContinue:
 				result.add("continue");
 			case TThrow(expr):
-				trace('TThrow ${expr}');
+				trace('TThrow not supported yet: ${expr}');
 			case TCast(expr, maybeModuleType):
 				trace('TCast ${expr}, ${maybeModuleType}');
 			case TMeta(_, expr):
-				trace('TMeta ${expr}');
+				trace('TMeta not supported yet: ${expr}');
 			case TEnumParameter(expr, enumField, index):
-				trace('TEnumParameter ${expr}, ${enumField}, ${index}');
+				trace('TEnumParameter not supported yet: ${expr}, ${enumField}, ${index}');
 			case TEnumIndex(expr):
-				trace('TEnumIndex ${expr}');
+				trace('TEnumIndex not supported yet: ${expr}');
 		}
 
 		return result.toString();
@@ -243,7 +256,7 @@ class Compiler extends DirectToStringCompiler {
 		result.add(compileExpression(calledExpr));
 		result.add("(");
 		result.add(args.map(e -> compileExpressionOrError(e)).join(", "));
-		result.add(");");
+		result.add(")");
 
 		return result;
 	}
